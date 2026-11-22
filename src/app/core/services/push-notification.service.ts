@@ -3,10 +3,19 @@ import { Injectable, inject, signal } from '@angular/core';
 import { SwPush } from '@angular/service-worker';
 import { firstValueFrom } from 'rxjs';
 import { PUSH_API_URL, VAPID_PUBLIC_KEY } from '../config/push.config';
+import { LibraryChange, LibraryEntry } from '../models/library.model';
 import { PushPreferences } from '../models/push.model';
 import { readStorage, writeStorage } from '../utils/storage';
 
 const PREFERENCES_KEY = 'push:preferences';
+
+const DEFAULT_PREFERENCES: PushPreferences = {
+  newGames: true,
+  weekly: true,
+  library: true,
+  releases: true,
+  genres: [],
+};
 
 @Injectable({ providedIn: 'root' })
 export class PushNotificationService {
@@ -19,9 +28,10 @@ export class PushNotificationService {
   private readonly _enabled = signal(false);
   readonly enabled = this._enabled.asReadonly();
 
-  private readonly _preferences = signal<PushPreferences>(
-    readStorage(PREFERENCES_KEY, { newGames: true, weekly: true, genres: [] }),
-  );
+  private readonly _preferences = signal<PushPreferences>({
+    ...DEFAULT_PREFERENCES,
+    ...readStorage<Partial<PushPreferences>>(PREFERENCES_KEY, {}),
+  });
   readonly preferences = this._preferences.asReadonly();
 
   constructor() {
@@ -70,16 +80,26 @@ export class PushNotificationService {
   }
 
   async sendTest(): Promise<void> {
-    await this.post('/test', { endpoint: await this.registeredEndpoint() });
+    await this.postAsSubscriber('/test', {});
   }
 
   async setReminder(gameId: number, remindAt: string): Promise<void> {
-    const endpoint = await this.registeredEndpoint();
-    await this.post('/reminders', { endpoint, gameId, remindAt });
+    await this.postAsSubscriber('/reminders', { gameId, remindAt });
   }
 
   async cancelReminder(gameId: number): Promise<void> {
-    await this.post('/reminders/cancel', { endpoint: await this.registeredEndpoint(), gameId });
+    await this.postAsSubscriber('/reminders/cancel', { gameId });
+  }
+
+  async notifyLibraryChange(change: LibraryChange): Promise<void> {
+    await this.postAsSubscriber('/library', change);
+  }
+
+  async syncLibrary(entries: LibraryEntry[]): Promise<void> {
+    const items = entries
+      .slice(0, 200)
+      .map(({ game, status, remindAt }) => ({ gameId: game.id, status, remindAt }));
+    await this.postAsSubscriber('/library/sync', { items });
   }
 
   /** Convierte cualquier fallo en un mensaje que diga qué hacer. */
@@ -113,12 +133,18 @@ export class PushNotificationService {
     return registration.pushManager.getSubscription();
   }
 
-  /** Se asegura de que el servidor conoce este dispositivo, por si perdió sus datos. */
-  private async registeredEndpoint(): Promise<string> {
+  /** Si el servidor ya no conoce este dispositivo (410), lo vuelve a registrar y reintenta. */
+  private async postAsSubscriber(path: string, body: object): Promise<void> {
     const subscription = await this.current();
     if (!subscription) throw new Error('Este dispositivo no está suscrito.');
-    await this.register(subscription, true);
-    return subscription.endpoint;
+    const payload = { ...body, endpoint: subscription.endpoint };
+    try {
+      await this.post(path, payload);
+    } catch (error) {
+      if (!(error instanceof HttpErrorResponse) || error.status !== 410) throw error;
+      await this.register(subscription, true);
+      await this.post(path, payload);
+    }
   }
 
   private post(path: string, body: unknown): Promise<unknown> {

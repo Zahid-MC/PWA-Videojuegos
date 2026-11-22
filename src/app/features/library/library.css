@@ -54,6 +54,10 @@ article:last-child {
   border: 0;
 }
 
+header a {
+  color: var(--cream);
+}
+
 article a {
   display: grid;
   gap: 10px;

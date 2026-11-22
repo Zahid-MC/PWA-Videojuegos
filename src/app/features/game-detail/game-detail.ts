@@ -8,7 +8,9 @@ import { Game, GameDetail } from '../../core/models/game.model';
 import { LIBRARY_STATUSES } from '../../core/models/library.model';
 import { GameService } from '../../core/services/game.service';
 import { LibraryService } from '../../core/services/library.service';
+import { PushNotificationService } from '../../core/services/push-notification.service';
 import { genreColor, genreLabel } from '../../core/utils/genres';
+import { isUpcoming } from '../../core/utils/release';
 import { GameBox } from '../../shared/game-box';
 import { Icon } from '../../shared/icon';
 import { ReminderPicker } from '../../shared/reminder-picker';
@@ -26,6 +28,7 @@ export class GameDetailPage {
   private readonly service = inject(GameService);
   private readonly title = inject(Title);
   protected readonly library = inject(LibraryService);
+  protected readonly push = inject(PushNotificationService);
 
   /** Parámetro :id de la ruta. */
   readonly id = input.required<string>();
@@ -61,6 +64,20 @@ export class GameDetailPage {
   protected readonly color = computed(() => genreColor(this.game()?.genre ?? ''));
   protected readonly label = computed(() => genreLabel(this.game()?.genre ?? ''));
   protected readonly statuses = LIBRARY_STATUSES;
+
+  protected readonly upcoming = computed(() => {
+    const game = this.game();
+    return game !== null && isUpcoming(game);
+  });
+  protected readonly releaseNotice = computed(() => {
+    if (!this.push.enabled() || !this.push.preferences().releases) {
+      return 'Activa los avisos de lanzamientos para saber cuándo sale.';
+    }
+    const status = this.entry()?.status;
+    return status && status !== 'done'
+      ? 'Te avisaremos la víspera y el día que salga.'
+      : 'Guárdalo y te avisaremos cuando salga.';
+  });
 
   /** Capturas que sí cargaron: sin conexión algunas pueden no estar guardadas. */
   protected readonly screenshots = linkedSignal(() => this.detail()?.screenshots ?? []);

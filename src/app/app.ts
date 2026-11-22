@@ -4,6 +4,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import { filter } from 'rxjs';
 import { ConnectivityService } from './core/services/connectivity.service';
+import { LibraryNotificationsService } from './core/services/library-notifications.service';
 import { LibraryService } from './core/services/library.service';
 import { Icon, IconName } from './shared/icon';
 
@@ -37,6 +38,8 @@ export class App {
   ];
 
   constructor() {
+    inject(LibraryNotificationsService);
+
     this.updates.versionUpdates
       .pipe(
         filter((event) => event.type === 'VERSION_READY'),

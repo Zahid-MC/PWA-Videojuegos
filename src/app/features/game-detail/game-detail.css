@@ -193,6 +193,25 @@ fieldset button[aria-pressed='true'] {
   font-weight: 600;
 }
 
+fieldset .remove {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-color: transparent;
+  color: var(--mute);
+}
+
+.release {
+  padding: 14px 16px;
+  border-left: 7px solid var(--genre);
+  border-radius: 6px 12px 12px 6px;
+  background: var(--panel-high);
+}
+
+.release strong {
+  display: block;
+}
+
 .facts {
   display: grid;
   gap: 12px;

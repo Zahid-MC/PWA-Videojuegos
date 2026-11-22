@@ -104,6 +104,34 @@
         </span>
       </label>
 
+      <label>
+        <input
+          #library
+          type="checkbox"
+          [checked]="push.preferences().library"
+          [disabled]="busy()"
+          (change)="update({ library: library.checked })"
+        />
+        <span>
+          <strong>Mi biblioteca</strong>
+          Al guardar un juego, cambiarlo de lista o eliminarlo.
+        </span>
+      </label>
+
+      <label>
+        <input
+          #releases
+          type="checkbox"
+          [checked]="push.preferences().releases"
+          [disabled]="busy()"
+          (change)="update({ releases: releases.checked })"
+        />
+        <span>
+          <strong>Lanzamientos</strong>
+          La víspera y el día en que sale un juego que guardaste.
+        </span>
+      </label>
+
       <p class="note">
         Los recordatorios se programan en la ficha de cada juego o desde tu biblioteca.
       </p>

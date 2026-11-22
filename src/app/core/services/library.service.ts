@@ -1,6 +1,7 @@
 import { Injectable, computed, signal } from '@angular/core';
+import { Subject } from 'rxjs';
 import { Game } from '../models/game.model';
-import { LibraryEntry, LibraryStatus } from '../models/library.model';
+import { LibraryChange, LibraryEntry, LibraryStatus } from '../models/library.model';
 import { readStorage, writeStorage } from '../utils/storage';
 
 const LIBRARY_KEY = 'library';
@@ -12,12 +13,18 @@ export class LibraryService {
   readonly entries = this._entries.asReadonly();
   readonly count = computed(() => this._entries().length);
 
+  private readonly _changes = new Subject<LibraryChange>();
+  readonly changes = this._changes.asObservable();
+
   get(id: number): LibraryEntry | undefined {
     return this._entries().find((entry) => entry.game.id === id);
   }
 
   setStatus(game: Game, status: LibraryStatus): void {
-    if (this.get(game.id)) {
+    const current = this.get(game.id);
+    if (current?.status === status) return;
+
+    if (current) {
       this.patch(game.id, { status });
     } else {
       this.save([
@@ -25,6 +32,7 @@ export class LibraryService {
         ...this._entries(),
       ]);
     }
+    this._changes.next({ gameId: game.id, action: status });
   }
 
   setReminder(game: Game, remindAt: string | undefined): void {
@@ -33,7 +41,9 @@ export class LibraryService {
   }
 
   remove(id: number): void {
+    if (!this.get(id)) return;
     this.save(this._entries().filter((entry) => entry.game.id !== id));
+    this._changes.next({ gameId: id, action: 'removed' });
   }
 
   private patch(id: number, changes: Partial<LibraryEntry>): void {

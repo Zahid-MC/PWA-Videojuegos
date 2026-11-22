@@ -2,6 +2,13 @@ import { Game } from './game.model';
 
 export type LibraryStatus = 'wish' | 'playing' | 'done';
 
+export type LibraryAction = LibraryStatus | 'removed';
+
+export interface LibraryChange {
+  gameId: number;
+  action: LibraryAction;
+}
+
 export interface LibraryEntry {
   /** Copia del juego para mostrar la biblioteca aunque no haya red ni caché. */
   game: Game;

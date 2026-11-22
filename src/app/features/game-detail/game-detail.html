@@ -92,7 +92,19 @@
               {{ status.label }}
             </button>
           }
+          @if (entry()) {
+            <button class="remove" type="button" (click)="library.remove(game.id)">
+              <app-icon name="trash" /> Eliminar de mi biblioteca
+            </button>
+          }
         </fieldset>
+
+        @if (upcoming()) {
+          <p class="release">
+            <strong>Sale el {{ game.releaseDate | date: 'dd/MM/yyyy' }}</strong>
+            {{ releaseNotice() }}
+          </p>
+        }
 
         <div>
           <h2>Recordatorio</h2>

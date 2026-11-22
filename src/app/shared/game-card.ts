@@ -1,13 +1,15 @@
+import { DatePipe } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Game } from '../core/models/game.model';
 import { LibraryService } from '../core/services/library.service';
+import { isUpcoming } from '../core/utils/release';
 import { GameBox } from './game-box';
 import { Icon } from './icon';
 
 @Component({
   selector: 'app-game-card',
-  imports: [GameBox, Icon, RouterLink],
+  imports: [DatePipe, GameBox, Icon, RouterLink],
   template: `
     <article>
       <app-game-box [game]="game()" [eager]="eager()" />
@@ -17,7 +19,11 @@ import { Icon } from './icon';
             <a [routerLink]="['/juego', game().id]">{{ game().title }}</a>
           </h3>
           <p>
-            {{ game().releaseDate.slice(0, 4) }}
+            @if (upcoming()) {
+              Sale el {{ game().releaseDate | date: 'dd/MM/yyyy' }}
+            } @else {
+              {{ game().releaseDate.slice(0, 4) }}
+            }
             @for (platform of game().platforms; track platform) {
               <app-icon [name]="platform" />
               <span class="sr-only">{{ platform === 'pc' ? 'PC' : 'Navegador' }}</span>
@@ -111,6 +117,7 @@ export class GameCard {
 
   readonly game = input.required<Game>();
   readonly eager = input(false);
+  protected readonly upcoming = computed(() => isUpcoming(this.game()));
   protected readonly saved = computed(() => !!this.library.get(this.game().id));
 
   protected toggle(): void {

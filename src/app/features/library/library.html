@@ -2,6 +2,12 @@
   <header>
     <h1>Mi biblioteca</h1>
     <p>Se guarda en este dispositivo y funciona sin conexión.</p>
+    @if (push.isSupported && push.isConfigured && !push.enabled()) {
+      <p>
+        <a routerLink="/avisos">Activa los avisos</a> para recibir una notificación al guardar,
+        mover o eliminar un juego.
+      </p>
+    }
   </header>
 
   @if (count()) {

@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { Game } from '../../core/models/game.model';
 import { LIBRARY_STATUSES, LibraryStatus } from '../../core/models/library.model';
 import { LibraryService } from '../../core/services/library.service';
+import { PushNotificationService } from '../../core/services/push-notification.service';
 import { GameBox } from '../../shared/game-box';
 import { Icon } from '../../shared/icon';
 import { ReminderPicker } from '../../shared/reminder-picker';
@@ -15,6 +16,7 @@ import { ReminderPicker } from '../../shared/reminder-picker';
 })
 export class Library {
   private readonly library = inject(LibraryService);
+  protected readonly push = inject(PushNotificationService);
 
   protected readonly count = this.library.count;
   protected readonly statuses = LIBRARY_STATUSES;
