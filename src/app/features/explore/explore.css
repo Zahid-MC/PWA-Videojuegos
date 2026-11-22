@@ -1,0 +1,215 @@
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  gap: 48px;
+  max-width: 1320px;
+  min-height: 460px;
+  margin: 0 auto;
+  padding: 48px var(--gutter);
+}
+
+.pitch {
+  display: grid;
+  justify-items: start;
+  gap: 24px;
+}
+
+h1 {
+  font-size: clamp(2.1rem, 5vw, 4rem);
+  font-weight: 800;
+}
+
+.pitch p {
+  max-width: 38ch;
+  color: var(--mute);
+  font-size: 1.125rem;
+}
+
+.stack {
+  position: relative;
+  height: 340px;
+  perspective: 1200px;
+}
+
+.stack a {
+  position: absolute;
+  top: calc(var(--i) * 74px);
+  left: calc(var(--i) * 9%);
+  z-index: calc(3 - var(--i));
+  width: min(74%, 400px);
+  border-radius: 12px;
+  transform: rotateY(-16deg) rotate(calc(var(--i) * 2deg - 3deg));
+  animation: drop 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  animation-delay: calc((2 - var(--i)) * 110ms);
+  transition: transform 0.25s;
+}
+
+.stack a:hover,
+.stack a:focus-visible {
+  z-index: 4;
+  transform: rotateY(0) translateY(-6px);
+}
+
+.stack app-game-box {
+  box-shadow: 0 24px 40px -18px #000;
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) rotateY(-30deg);
+  }
+}
+
+.rail {
+  display: flex;
+  gap: 6px;
+  margin: 0 calc(var(--gutter) * -1);
+  padding: 4px var(--gutter) 16px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.rail button {
+  flex: none;
+  min-height: 46px;
+  padding: 0 16px;
+  border: 0;
+  border-left: 7px solid var(--genre, var(--cream));
+  border-radius: 6px 12px 12px 6px;
+  background: var(--panel);
+  font-weight: 500;
+}
+
+.rail button:hover {
+  background: var(--panel-high);
+}
+
+.rail button[aria-pressed='true'] {
+  background: var(--genre, var(--cream));
+  color: #10181a;
+  font-weight: 700;
+}
+
+.rail span {
+  margin-left: 4px;
+  opacity: 0.7;
+}
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.search {
+  display: flex;
+  flex: 1 1 260px;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--mute);
+}
+
+.search:focus-within {
+  border-color: var(--coral);
+}
+
+.search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  color: var(--cream);
+}
+
+.search input::placeholder {
+  color: var(--mute);
+}
+
+.segmented {
+  display: flex;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.segmented button {
+  padding: 0 14px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--mute);
+}
+
+.segmented button[aria-pressed='true'] {
+  background: var(--panel-high);
+  color: var(--cream);
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin: 20px 0;
+  color: var(--mute);
+  font-size: 0.925rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
+  gap: 32px 24px;
+}
+
+.state {
+  margin-top: 24px;
+}
+
+.skeleton {
+  margin-top: 24px;
+  border-radius: 8px 12px 12px 8px;
+  background: linear-gradient(100deg, var(--panel) 40%, var(--panel-high) 50%, var(--panel) 60%) 0
+    0 / 300% 100%;
+  aspect-ratio: 395 / 250;
+  animation: shimmer 1.4s linear infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+.more {
+  display: grid;
+  place-items: center;
+  margin-top: 48px;
+}
+
+@media (max-width: 820px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    min-height: 0;
+    padding-block: 32px 8px;
+  }
+
+  .stack {
+    height: 290px;
+  }
+
+  .stack a {
+    top: calc(var(--i) * 56px);
+  }
+}

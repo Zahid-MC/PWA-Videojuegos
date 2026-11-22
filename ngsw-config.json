@@ -1,0 +1,72 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/index.csr.html",
+          "/index.html",
+          "/manifest.webmanifest",
+          "/icons/*.png",
+          "/*.css",
+          "/*.js",
+          "/media/*-latin-wght-*.woff2"
+        ]
+      }
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": ["/**/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "catalogo",
+      "urls": ["https://www.freetogame.com/api/games"],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "timeout": "6s",
+        "maxAge": "14d",
+        "maxSize": 2
+      }
+    },
+    {
+      "name": "fichas",
+      "urls": ["https://www.freetogame.com/api/game?id=*"],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "timeout": "6s",
+        "maxAge": "14d",
+        "maxSize": 100
+      }
+    },
+    {
+      "name": "portadas",
+      "urls": ["https://www.freetogame.com/g/*/thumbnail.jpg"],
+      "cacheConfig": {
+        "strategy": "performance",
+        "maxAge": "30d",
+        "maxSize": 80,
+        "cacheOpaqueResponses": true
+      }
+    },
+    {
+      "name": "capturas",
+      "urls": ["https://www.freetogame.com/g/**"],
+      "cacheConfig": {
+        "strategy": "performance",
+        "maxAge": "14d",
+        "maxSize": 20,
+        "cacheOpaqueResponses": true
+      }
+    }
+  ]
+}

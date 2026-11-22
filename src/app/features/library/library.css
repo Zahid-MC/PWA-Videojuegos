@@ -1,0 +1,80 @@
+header {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 36px;
+}
+
+h1 {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 800;
+}
+
+header p,
+.empty {
+  color: var(--mute);
+}
+
+.lanes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  align-items: start;
+  gap: 24px;
+}
+
+section {
+  display: grid;
+  gap: 20px;
+  padding: 20px;
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+h2 {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 5px solid var(--line);
+  font-size: 1.05rem;
+}
+
+h2 span {
+  color: var(--mute);
+  font-weight: 500;
+}
+
+article {
+  display: grid;
+  gap: 12px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+article:last-child {
+  padding-bottom: 0;
+  border: 0;
+}
+
+article a {
+  display: grid;
+  gap: 10px;
+  text-decoration: none;
+}
+
+h3 {
+  font: 600 1.05rem/1.3 var(--body);
+  letter-spacing: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions select {
+  flex: 1;
+  min-width: 0;
+}
+
+.actions .btn {
+  padding: 0 14px;
+}

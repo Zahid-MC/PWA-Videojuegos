@@ -1,0 +1,128 @@
+<section class="hero">
+  <div class="pitch">
+    <h1>Tu próxima partida empieza gratis.</h1>
+    <p>
+      @if (games().length) {
+        {{ games().length }} juegos que no cuestan nada, ordenados como en una buena estantería.
+      } @else {
+        Juegos que no cuestan nada, ordenados como en una buena estantería.
+      }
+    </p>
+    <button
+      class="btn primary"
+      type="button"
+      [disabled]="!filters.results().length"
+      (click)="surprise()"
+    >
+      <app-icon name="dice" /> Elige por mí
+    </button>
+  </div>
+
+  <div class="stack">
+    @for (game of newest(); track game.id) {
+      <a [routerLink]="['/juego', game.id]" [style.--i]="$index">
+        <app-game-box [game]="game" [eager]="true" />
+        <span class="sr-only">Recién llegado: {{ game.title }}</span>
+      </a>
+    }
+  </div>
+</section>
+
+<div class="page">
+  <div class="rail" role="group" aria-label="Filtrar por género">
+    <button type="button" [attr.aria-pressed]="!filters.genre()" (click)="filters.genre.set(null)">
+      Todos
+    </button>
+    @for (genre of genres(); track genre.name) {
+      <button
+        type="button"
+        [style.--genre]="genreColor(genre.name)"
+        [attr.aria-pressed]="filters.genre() === genre.name"
+        (click)="filters.genre.set(genre.name)"
+      >
+        {{ genreLabel(genre.name) }} <span>{{ genre.count }}</span>
+      </button>
+    }
+  </div>
+
+  <div class="tools">
+    <label class="search">
+      <app-icon name="search" />
+      <span class="sr-only">Buscar por título o estudio</span>
+      <input
+        #search
+        type="search"
+        placeholder="Título o estudio"
+        [value]="filters.query()"
+        (input)="filters.query.set(search.value)"
+      />
+    </label>
+
+    <div class="segmented" role="group" aria-label="Plataforma">
+      @for (platform of platforms; track platform.label) {
+        <button
+          type="button"
+          [attr.aria-pressed]="filters.platform() === platform.value"
+          (click)="filters.platform.set(platform.value)"
+        >
+          {{ platform.label }}
+        </button>
+      }
+    </div>
+
+    <select
+      #order
+      class="field"
+      aria-label="Ordenar"
+      [value]="filters.order()"
+      (change)="setOrder(order.value)"
+    >
+      <option value="newest">Más recientes</option>
+      <option value="oldest">Más antiguos</option>
+      <option value="title">Por título</option>
+    </select>
+  </div>
+
+  @if (games().length) {
+    <p class="summary" role="status">
+      {{ filters.results().length }} {{ filters.results().length === 1 ? 'juego' : 'juegos' }}
+      @if (lastUpdate(); as date) {
+        <span>Catálogo del {{ date | date: 'dd/MM/yyyy, HH:mm' }}</span>
+      }
+    </p>
+  }
+
+  @if (error()) {
+    <div class="state" role="alert">
+      <h2>No pudimos cargar el catálogo</h2>
+      <p>{{ error() }}</p>
+      <button class="btn" type="button" (click)="retry()">Reintentar</button>
+    </div>
+  } @else if (loading() && !games().length) {
+    <div class="grid" aria-busy="true">
+      <p class="sr-only" role="status">Cargando el catálogo</p>
+      @for (item of skeletons; track item) {
+        <div class="skeleton"></div>
+      }
+    </div>
+  } @else if (games().length && !filters.results().length) {
+    <div class="state">
+      <h2>Nada en esta estantería</h2>
+      <p>Ningún juego coincide con tu búsqueda y tus filtros.</p>
+      <button class="btn" type="button" (click)="filters.clear()">Quitar filtros</button>
+    </div>
+  } @else {
+    <div class="grid">
+      @for (game of filters.visible(); track game.id) {
+        <app-game-card [game]="game" />
+      }
+    </div>
+    @if (filters.remaining() > 0) {
+      <div class="more">
+        <button class="btn" type="button" (click)="filters.showMore()">
+          Mostrar más ({{ filters.remaining() }})
+        </button>
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,171 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.skip {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  z-index: 30;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--coral);
+  color: #1d0a04;
+}
+
+.skip:focus {
+  top: 12px;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  min-height: 72px;
+  padding: 0 max(var(--gutter), calc((100% - 1320px) / 2 + var(--gutter)));
+  border-bottom: 1px solid var(--line);
+  background: var(--ink);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font: 800 1.2rem/1 var(--display);
+  letter-spacing: -0.03em;
+  text-decoration: none;
+}
+
+.brand svg {
+  width: 34px;
+}
+
+.brand .spine {
+  fill: var(--coral);
+}
+
+.brand .face {
+  fill: var(--cream);
+}
+
+.brand .play {
+  fill: var(--ink);
+}
+
+nav {
+  display: flex;
+  gap: 4px;
+}
+
+nav a {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  color: var(--mute);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+nav a:hover {
+  color: var(--cream);
+}
+
+nav a.active {
+  background: var(--panel-high);
+  color: var(--cream);
+}
+
+.count {
+  min-width: 22px;
+  padding: 0 6px;
+  border-radius: 99px;
+  background: var(--coral);
+  color: #1d0a04;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.install {
+  margin-left: auto;
+}
+
+.banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px var(--gutter);
+  background: var(--panel-high);
+  font-size: 0.925rem;
+}
+
+.banner.offline {
+  background: #f4c752;
+  color: #241a00;
+}
+
+.banner button {
+  border: 0;
+  background: none;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+main {
+  flex: 1;
+  outline: none;
+}
+
+footer {
+  padding: 24px max(var(--gutter), calc((100% - 1320px) / 2 + var(--gutter)));
+  border-top: 1px solid var(--line);
+  color: var(--mute);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 720px) {
+  header {
+    min-height: 60px;
+  }
+
+  nav {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 20;
+    justify-content: space-around;
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    background: var(--ink);
+  }
+
+  nav a {
+    position: relative;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    min-height: 54px;
+    padding: 0;
+    font-size: 0.78rem;
+  }
+
+  .count {
+    position: absolute;
+    top: 2px;
+    left: calc(50% + 8px);
+  }
+
+  footer {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
+  }
+}

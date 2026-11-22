@@ -1,0 +1,135 @@
+<div class="page" [style.--genre]="color()">
+  <a class="back" routerLink="/explorar"><app-icon name="back" /> Explorar</a>
+
+  @if (game(); as game) {
+    <header>
+      <p class="genre">{{ label() }}</p>
+      <h1>{{ game.title }}</h1>
+      <p class="lead">{{ game.summary }}</p>
+    </header>
+
+    <div class="layout">
+      <div class="media">
+        @if (selected(); as shot) {
+          <img
+            class="shot"
+            [src]="shot"
+            [alt]="'Captura de ' + game.title"
+            (error)="dropScreenshot(shot)"
+          />
+          @if (screenshots().length > 1) {
+            <div class="thumbs" role="group" aria-label="Capturas">
+              @for (item of screenshots(); track item) {
+                <button
+                  type="button"
+                  [attr.aria-label]="'Ver captura ' + ($index + 1)"
+                  [attr.aria-pressed]="item === shot"
+                  (click)="selected.set(item)"
+                >
+                  <img [src]="item" alt="" (error)="dropScreenshot(item)" />
+                </button>
+              }
+            </div>
+          }
+        } @else {
+          <app-game-box [game]="game" [eager]="true" />
+        }
+
+        @switch (state().status) {
+          @case ('loading') {
+            <p class="note" role="status">Cargando la ficha completa…</p>
+          }
+          @case ('error') {
+            <div class="note" role="alert">
+              <p>La ficha completa no está disponible ahora. Esto es lo que tenemos guardado.</p>
+              <button class="btn" type="button" (click)="retry()">Reintentar</button>
+            </div>
+          }
+        }
+
+        @if (detail(); as detail) {
+          <section class="about">
+            <h2>De qué trata</h2>
+            <p class="description" [class.clamped]="!expanded() && detail.description.length > 600">
+              {{ detail.description }}
+            </p>
+            @if (detail.description.length > 600) {
+              <button class="link" type="button" (click)="expanded.set(!expanded())">
+                {{ expanded() ? 'Leer menos' : 'Leer más' }}
+              </button>
+            }
+          </section>
+
+          @if (detail.requirements.length) {
+            <section>
+              <h2>Requisitos mínimos</h2>
+              <dl class="specs">
+                @for (item of detail.requirements; track item.label) {
+                  <div>
+                    <dt>{{ item.label }}</dt>
+                    <dd>{{ item.value }}</dd>
+                  </div>
+                }
+              </dl>
+            </section>
+          }
+        }
+      </div>
+
+      <aside>
+        <a class="btn primary" [href]="game.playUrl" target="_blank" rel="noopener">
+          Jugar gratis <app-icon name="external" />
+        </a>
+
+        <fieldset>
+          <legend>En mi biblioteca</legend>
+          @for (status of statuses; track status.value) {
+            <button
+              type="button"
+              [attr.aria-pressed]="entry()?.status === status.value"
+              (click)="library.setStatus(game, status.value)"
+            >
+              {{ status.label }}
+            </button>
+          }
+        </fieldset>
+
+        <div>
+          <h2>Recordatorio</h2>
+          <app-reminder-picker [game]="game" />
+        </div>
+
+        <dl class="facts">
+          <div>
+            <dt>Lanzamiento</dt>
+            <dd>{{ game.releaseDate | date: 'dd/MM/yyyy' }}</dd>
+          </div>
+          <div>
+            <dt>Estudio</dt>
+            <dd>{{ game.developer }}</dd>
+          </div>
+          <div>
+            <dt>Distribuye</dt>
+            <dd>{{ game.publisher }}</dd>
+          </div>
+          <div>
+            <dt>Plataforma</dt>
+            <dd>
+              @for (platform of game.platforms; track platform) {
+                {{ platform === 'pc' ? 'PC' : 'Navegador' }}{{ $last ? '' : ', ' }}
+              }
+            </dd>
+          </div>
+        </dl>
+      </aside>
+    </div>
+  } @else if (state().status === 'loading') {
+    <p class="state" role="status">Cargando el juego…</p>
+  } @else {
+    <div class="state" role="alert">
+      <h2>No encontramos este juego</h2>
+      <p>Puede que ya no exista o que no se guardara en este dispositivo antes de perder la red.</p>
+      <button class="btn" type="button" (click)="retry()">Reintentar</button>
+    </div>
+  }
+</div>

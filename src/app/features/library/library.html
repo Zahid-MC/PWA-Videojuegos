@@ -1,0 +1,59 @@
+<div class="page">
+  <header>
+    <h1>Mi biblioteca</h1>
+    <p>Se guarda en este dispositivo y funciona sin conexión.</p>
+  </header>
+
+  @if (count()) {
+    <div class="lanes">
+      @for (lane of lanes(); track lane.value) {
+        <section [attr.aria-label]="lane.label">
+          <h2>
+            {{ lane.label }} <span>{{ lane.entries.length }}</span>
+          </h2>
+          @for (entry of lane.entries; track entry.game.id) {
+            <article>
+              <a [routerLink]="['/juego', entry.game.id]">
+                <app-game-box [game]="entry.game" />
+                <h3>{{ entry.game.title }}</h3>
+              </a>
+              <div class="actions">
+                <select
+                  #status
+                  class="field"
+                  [attr.aria-label]="'Estado de ' + entry.game.title"
+                  (change)="move(entry.game, status.value)"
+                >
+                  @for (option of statuses; track option.value) {
+                    <option [value]="option.value" [selected]="option.value === entry.status">
+                      {{ option.label }}
+                    </option>
+                  }
+                </select>
+                <button
+                  class="btn"
+                  type="button"
+                  [attr.aria-label]="'Quitar ' + entry.game.title"
+                  (click)="remove(entry.game.id)"
+                >
+                  <app-icon name="trash" />
+                </button>
+              </div>
+              @if (entry.status !== 'done') {
+                <app-reminder-picker [game]="entry.game" />
+              }
+            </article>
+          } @empty {
+            <p class="empty">{{ lane.hint }}</p>
+          }
+        </section>
+      }
+    </div>
+  } @else {
+    <div class="state">
+      <h2>Tu estantería está vacía</h2>
+      <p>Guarda un juego con el marcador y aparecerá aquí.</p>
+      <a class="btn primary" routerLink="/explorar">Explorar juegos</a>
+    </div>
+  }
+</div>

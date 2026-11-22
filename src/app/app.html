@@ -1,0 +1,56 @@
+<a class="skip" href="#contenido" (click)="$event.preventDefault(); main.focus()">
+  Saltar al contenido
+</a>
+
+<header>
+  <a class="brand" routerLink="/explorar" aria-label="Partida, ir a Explorar">
+    <svg viewBox="0 0 40 40" aria-hidden="true">
+      <path class="spine" d="M4 8a4 4 0 0 1 4-4h4v32H8a4 4 0 0 1-4-4V8Z" />
+      <path class="face" d="M14 4h18a4 4 0 0 1 4 4v24a4 4 0 0 1-4 4H14V4Z" />
+      <path class="play" d="M20.5 13v14l11-7-11-7Z" />
+    </svg>
+    partida
+  </a>
+
+  <nav aria-label="Principal">
+    @for (link of links; track link.path) {
+      <a [routerLink]="link.path" routerLinkActive="active" ariaCurrentWhenActive="page">
+        <app-icon [name]="link.icon" />
+        {{ link.label }}
+        @if (link.path === '/biblioteca' && saved()) {
+          <span class="count">{{ saved() }}</span>
+        }
+      </a>
+    }
+  </nav>
+
+  @if (installPrompt()) {
+    <button class="btn install" type="button" (click)="install()">
+      <app-icon name="install" /> Instalar
+    </button>
+  }
+</header>
+
+@if (!online()) {
+  <p class="banner offline" role="status">
+    <app-icon name="offline" /> Sin conexión. Estás viendo lo último que se guardó en este
+    dispositivo.
+  </p>
+}
+@if (updateReady()) {
+  <p class="banner" role="status">
+    Hay una versión nueva de Partida.
+    <button type="button" (click)="reload()">Actualizar</button>
+  </p>
+}
+
+<main id="contenido" #main tabindex="-1">
+  <router-outlet />
+</main>
+
+<footer>
+  <p>
+    Datos e imágenes de
+    <a href="https://www.freetogame.com" target="_blank" rel="noopener">FreeToGame.com</a>
+  </p>
+</footer>

@@ -1,0 +1,112 @@
+<div class="page">
+  <header>
+    <h1>Avisos</h1>
+    <p>Entérate de lo que te importa, aunque Partida esté cerrada.</p>
+  </header>
+
+  @if (!push.isSupported) {
+    <div class="state">
+      <h2>Aquí no hay avisos</h2>
+      <p>
+        Hace falta la versión instalada o publicada de Partida y un navegador compatible. En modo
+        desarrollo están desactivados.
+      </p>
+    </div>
+  } @else if (!push.isConfigured) {
+    <div class="state">
+      <h2>Falta el servidor de avisos</h2>
+      <p>Esta publicación todavía no tiene configurada la dirección de su servidor.</p>
+    </div>
+  } @else {
+    <section class="switch" [class.on]="push.enabled()">
+      <app-icon name="bell" />
+      <div>
+        <h2>{{ push.enabled() ? 'Activados' : 'Desactivados' }}</h2>
+        <p>En este dispositivo</p>
+      </div>
+      @if (push.enabled()) {
+        <button class="btn" type="button" [disabled]="busy()" (click)="test()">
+          Enviar prueba
+        </button>
+        <button class="btn" type="button" [disabled]="busy()" (click)="disable()">
+          Desactivar
+        </button>
+      } @else {
+        <button class="btn primary" type="button" [disabled]="busy()" (click)="enable()">
+          {{ busy() ? 'Activando…' : 'Activar avisos' }}
+        </button>
+      }
+    </section>
+
+    <div class="feedback" aria-live="polite">
+      @if (error()) {
+        <p class="error">{{ error() }}</p>
+      }
+      @if (busy() && !push.enabled()) {
+        <p>La primera vez el navegador puede tardar hasta medio minuto.</p>
+      }
+      @if (message()) {
+        <p>{{ message() }}</p>
+      }
+    </div>
+
+    <section class="options">
+      <h2>Qué quieres recibir</h2>
+
+      <label>
+        <input
+          #newGames
+          type="checkbox"
+          [checked]="push.preferences().newGames"
+          [disabled]="busy()"
+          (change)="update({ newGames: newGames.checked })"
+        />
+        <span>
+          <strong>Juegos nuevos</strong>
+          Cuando el catálogo suma un título de los géneros que sigues.
+        </span>
+      </label>
+
+      @if (push.preferences().newGames && genres().length) {
+        <div class="genres" role="group" aria-label="Géneros que sigues">
+          <p>
+            {{
+              push.preferences().genres.length
+                ? 'Solo estos géneros:'
+                : 'Sigues todos. Elige alguno para limitarlos:'
+            }}
+          </p>
+          @for (genre of genres(); track genre.name) {
+            <button
+              type="button"
+              [style.--genre]="genreColor(genre.name)"
+              [disabled]="busy()"
+              [attr.aria-pressed]="push.preferences().genres.includes(genre.name)"
+              (click)="toggleGenre(genre.name)"
+            >
+              {{ genreLabel(genre.name) }}
+            </button>
+          }
+        </div>
+      }
+
+      <label>
+        <input
+          #weekly
+          type="checkbox"
+          [checked]="push.preferences().weekly"
+          [disabled]="busy()"
+          (change)="update({ weekly: weekly.checked })"
+        />
+        <span>
+          <strong>Juego de la semana</strong>
+          Una recomendación elegida por el equipo.
+        </span>
+      </label>
+
+      <p class="note">
+        Los recordatorios se programan en la ficha de cada juego o desde tu biblioteca.
+      </p>
+    </section>
+  }
+</div>
